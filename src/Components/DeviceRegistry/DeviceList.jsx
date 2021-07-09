@@ -1,77 +1,132 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import DeviceData from './DeviceData'
-import { Icon, List, Header, Container, Table, Image, Button, Form } from 'semantic-ui-react'
+import { Icon, List, Header, Container, Table, Button, Form } from 'semantic-ui-react'
+
+const initial = {
+  dname: '',
+  addresskeys: '',
+  addressvalues: '',
+  attributekeys: '',
+  attributevalues: '',
+  groups: ''
+}
+
+
 
 const DeviceList = (props) => {
-  let topicId = 3;
-  const devices = DeviceData;
+  const devices = DeviceData; //stick in useEffect 
   const [showDevices, setShowDevices] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
-  const [values, setValues] =  useState({
-    dname: '',
-    description: '',
-    addresskeys: '',
-    addressvalues: '',
-    attributekeys: '',
-    attributevalues: ''
-  })
+  const [values, setValues] =  useState(initial)
+
+  useEffect(() => {
+    const getOptions = {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }
+    fetch('http://localhost:8182/devices', getOptions)
+      .then(response => response.json())
+      .then(data => console.log(data))
+  }, [])
+
+  function combineKV(key, value) {
+    var obj = {}
+    for (var i = 0; i < key.length; i++) {
+      obj[key[i]] = value[i]
+    }
+    return obj
+  }
 
   const handleNameChange = (e => {
-    setValues((values) => ({
-      ...values,
-      dname: e.target.dname
-    }));
-  });
 
-  const handleDescChange = (e => {
     setValues((values) => ({
       ...values,
-      description: e.target.description
+      dname: e.target.value
     }));
   });
 
   const handleAddressKeyChange = (e => {
     setValues((values) => ({
       ...values,
-      addresskeys: e.target.addresskeys
+      addresskeys: e.target.value
     }));
   });
 
   const handleAddressValChange = (e => {
     setValues((values) => ({
       ...values,
-      addressvalues: e.target.addressvalues
+      addressvalues: e.target.value
     }));
   });
 
   const handleAttributeKeyChange = (e => {
     setValues((values) => ({
       ...values,
-      attributekeys: e.target.attributekeys
+      attributekeys: e.target.value
     }));
   });
 
   const handleAttributeValChange = (e => {
     setValues((values) => ({
       ...values,
-      attributevalues: e.target.attributevalues
+      attributevalues: e.target.value
+    }));
+  });
+
+  const handleGroupChange = (e => {
+    setValues((values) => ({
+      ...values,
+      groups: e.target.value
     }));
   });
 
   const handleSubmit = (e => {
-    alert('New device form submitted.')
+    if (values.dname == '') {
+      alert("Must enter a device name!")
+      return
+    }
+    var dname = values.dname
+    for (var i = 0; i < devices.length; i++) {
+      if (devices[i].name == dname) {
+        alert("Device name already exists. Please enter a different name.")
+        return 
+      }
+    }
+    var addrk = values.addresskeys.split(',')
+    var addrv = values.addressvalues.split(',')
+    var address = combineKV(addrk, addrv)
+    var attrk = values.attributekeys.split(',')
+    var attrv = values.attributevalues.split(',')
+    var attribute = combineKV(attrk, attrv)
+    var group = values.groups.split(',')
+    var device = {
+      name: dname,
+      addresses: address,
+      attributes: attribute,
+      groups: group
+    }
+    setValues(initial);
+    const postOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(device)
+    }
+    fetch('https://httpbin.org/post', postOptions)
+      .then(response => response.json())
+      .then(data => console.log(data))
+
+    alert('New device ' + dname +  ", form submitted.")
     //handle form submit and device adding
-    
     e.preventDefault()
   })
 
   let groups = [];
   devices.map(device => {
     groups.push(...device.groups)
-  })
-  console.log("groups:", groups)
-
-  
+  }) //offload this to useEffect [] to run once
 
   const handleShowDevices = () => {
     setShowDevices(true)
@@ -101,6 +156,7 @@ const DeviceList = (props) => {
     return d
   }
   
+  
   return (
     <Container>
       <Header as='h2' dividing>
@@ -123,7 +179,6 @@ const DeviceList = (props) => {
                   <Icon name='mobile alternate' />
                     <Header.Content>
                       {device.name}
-                      <Header.Subheader>{device.description}</Header.Subheader>
                     </Header.Content>
                   </Header>
                   <Button basic compact floated={'right'} color='red'>Delete</Button>
@@ -165,28 +220,6 @@ const DeviceList = (props) => {
           </Table.Body>
         ))}
       </Table>
-
-      <Form onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Input name="dname" label="Enter device name" value={values.name} onChange={handleNameChange}/>
-          <Form.Input name="description" label="Enter description" value={values.description} onChange={handleDescChange}/>
-        </Form.Group>
-        <Form.Group>
-          <Form.Input name="addresskeys" inline label="Add addresses" placeholder="Address keys (comma separated)" value={values.addresskeys} onChange={handleAddressKeyChange}/>
-          <Form.Input name="addressvalues" placeholder="Address values (comma separated)" value={values.addressvalues} onChange={handleAddressValChange}/>
-        </Form.Group>
-        <Form.Group>
-          <Form.Input name="attributekeys" inline label="Add attributes" placeholder="Attribute keys (comma separated)" value={values.attributekeys} onChange={handleAttributeKeyChange}/>
-          <Form.Input name="attributevalues" placeholder="Attribute values (comma separated)" value={values.attributevalues} onChange={handleAttributeValChange}/>
-        </Form.Group>
-        <Button type="submit" basic >
-            <Button.Content>
-              <Icon name="mobile alternate" size="big"></Icon>
-              <Icon corner name='add' />
-            </Button.Content>
-      </Button>
-      </Form>
-      <br></br>
       {showDevices ? 
           <Button onClick={(handleHideDevices)} primary>
             <Button.Content>
@@ -200,6 +233,30 @@ const DeviceList = (props) => {
           </Button.Content>
         </Button>
       }
+      <br></br>
+      <br></br>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group>
+          <Form.Input name="dname" label="Enter device name" value={values.name} onChange={handleNameChange} inline/>
+        </Form.Group>
+        <Form.Group>
+          <Form.Input name="addresskeys" inline label="Add addresses" placeholder="Address keys (comma separated)" value={values.addresskeys} onChange={handleAddressKeyChange}/>
+          <Form.Input name="addressvalues" placeholder="Address values (comma separated)" value={values.addressvalues} onChange={handleAddressValChange}/>
+        </Form.Group>
+        <Form.Group>
+          <Form.Input name="attributekeys" inline label="Add attributes" placeholder="Attribute keys (comma separated)" value={values.attributekeys} onChange={handleAttributeKeyChange}/>
+          <Form.Input name="attributevalues" placeholder="Attribute values (comma separated)" value={values.attributevalues} onChange={handleAttributeValChange}/>
+        </Form.Group>
+        <Form.Input name="groups" inline label="Add groups" placeholder="Groups (comma separated)" value={values.groups} onChange={handleGroupChange}/>
+        <Button type="submit" basic >
+            <Button.Content>
+              <Icon name="mobile alternate" size="big"></Icon>
+              <Icon corner name='add' />
+            </Button.Content>
+      </Button>
+      </Form>
+      <br></br>
+
     <div>
       <br></br>
     </div>

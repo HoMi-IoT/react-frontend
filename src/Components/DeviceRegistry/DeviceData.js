@@ -1,7 +1,6 @@
 const devices = [
     {
       "name":"device1",
-      "description":"test device1",
       "addresses":{
         "ipaddr1":"192.168.153.128",
         "MAC":"02:9B:B0:CB:AA:FC"
@@ -15,7 +14,6 @@ const devices = [
     },
     {
       "name":"light1",
-      "description":"living room light 1",
       "addresses":{
         "ipaddr1":"10.0.0.18",
         "MAC":"02:9B:99:CB:6Y:FC"
@@ -28,7 +26,6 @@ const devices = [
     },
     {
       "name":"thermo1",
-      "description":"living thermostat 1",
       "addresses":{
         "ipaddr1":"192.25.0.104",
         "MAC":"CB:HH:FC:02:9B:B0"
