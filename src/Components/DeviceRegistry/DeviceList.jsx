@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react'
-import DeviceData from './DeviceData'
 import { Icon, List, Header, Container, Table, Button, Form } from 'semantic-ui-react'
 
 const initial = {
@@ -122,9 +121,9 @@ const DeviceList = (props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(device)
     }
-    fetch('https://httpbin.org/post', postOptions)
-      .then(response => response.json())
-      .then(data => console.log(data))
+    fetch('http://localhost:8182/devices', postOptions)
+      .then(response => response.text())
+      .then(data => {console.log(data); setDevices([...devices, device])})
 
     alert('New device ' + dname +  ", form submitted.")
     //handle form submit and device adding

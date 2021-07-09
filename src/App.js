@@ -21,9 +21,7 @@ function App() {
             <Switch>
               <Route exact path="/path/:id" component={()=><div>{"path/id"}</div>} />
               <Route exact path="/path" component={()=><div>{"path"}</div>} />
-              <Route exact path="/devices">
-                <DeviceList name={"mason"}></DeviceList>
-              </ Route>
+              <Route exact path="/devices" component={DeviceList} />
               <Route path="/" component={()=><div>{"Home"}</div>} />
             </Switch>
           </section>

@@ -16,6 +16,9 @@ export default () => {
         <Link to="/path" className="item">
             path
         </Link>
+        <Link to="/Devices" className="item">
+            Devices
+        </Link>
         <Link to="/login" onClick={()=>{}} className="item">
             Logout
         </Link>
