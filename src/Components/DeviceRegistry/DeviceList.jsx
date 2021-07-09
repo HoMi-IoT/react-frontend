@@ -11,26 +11,28 @@ const initial = {
   groups: ''
 }
 
+//add a mac button to /bluetooth/connect
+
 
 
 const DeviceList = (props) => {
-  const devices = DeviceData; //stick in useEffect 
+  const [devices, setDevices] = useState([]);
   const [showDevices, setShowDevices] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
   const [values, setValues] =  useState(initial)
 
-  // useEffect(() => {
-  //   const getOptions = {
-  //     method: 'GET',
-  //     headers: { 
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json'
-  //     }
-  //   }
-  //   fetch('http://localhost:8182/devices', getOptions)
-  //     .then(response => response.json())
-  //     .then(data => console.log(data))
-  // }, [])
+  useEffect(() => {
+    const getOptions = {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }
+    fetch('http://localhost:8182/devices', getOptions)
+      .then(response => response.json())
+      .then(data => setDevices(data))
+  }, [])
 
   function combineKV(key, value) {
     var obj = {}
@@ -39,6 +41,12 @@ const DeviceList = (props) => {
     }
     return obj
   }
+
+  const handleDeleteDevice = param => (e => {
+    const newList = devices.filter((item) => item.name !== param);
+    setDevices(newList);
+    console.log("DEVICES:", devices)
+  })
 
   const handleNameChange = (e => {
 
@@ -84,13 +92,13 @@ const DeviceList = (props) => {
   });
 
   const handleSubmit = (e => {
-    if (values.dname == '') {
+    if (values.dname === '') {
       alert("Must enter a device name!")
       return
     }
     var dname = values.dname
     for (var i = 0; i < devices.length; i++) {
-      if (devices[i].name == dname) {
+      if (devices[i].name === dname) {
         alert("Device name already exists. Please enter a different name.")
         return 
       }
@@ -130,7 +138,6 @@ const DeviceList = (props) => {
 
   const handleShowDevices = () => {
     setShowDevices(true)
-    console.log(showDevices)
   }
   const handleHideDevices = () => {
     setShowDevices(false)
@@ -138,12 +145,10 @@ const DeviceList = (props) => {
 
   const handleShowGroups = () => {
     setShowGroups(true)
-    console.log(showGroups)
   }
 
   const handleHideGroups = () => {
     setShowGroups(false)
-    console.log(showGroups)
   }
 
   const getDevicesInGroup = (groupName) => {
@@ -155,7 +160,6 @@ const DeviceList = (props) => {
     })
     return d
   }
-  
   
   return (
     <Container>
@@ -181,7 +185,7 @@ const DeviceList = (props) => {
                       {device.name}
                     </Header.Content>
                   </Header>
-                  <Button basic compact floated={'right'} color='red'>Delete</Button>
+                  <Button basic compact floated={'right'} color='red' onClick={handleDeleteDevice(device.name)}>Delete</Button>
                   <Button basic compact floated={'right'} color='blue'>Edit</Button>
               </Table.Cell>
               <Table.Cell>
