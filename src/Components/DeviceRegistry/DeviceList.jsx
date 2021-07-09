@@ -19,18 +19,18 @@ const DeviceList = (props) => {
   const [showGroups, setShowGroups] = useState(false);
   const [values, setValues] =  useState(initial)
 
-  useEffect(() => {
-    const getOptions = {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }
-    fetch('http://localhost:8182/devices', getOptions)
-      .then(response => response.json())
-      .then(data => console.log(data))
-  }, [])
+  // useEffect(() => {
+  //   const getOptions = {
+  //     method: 'GET',
+  //     headers: { 
+  //       'Content-Type': 'application/json',
+  //       'Accept': 'application/json'
+  //     }
+  //   }
+  //   fetch('http://localhost:8182/devices', getOptions)
+  //     .then(response => response.json())
+  //     .then(data => console.log(data))
+  // }, [])
 
   function combineKV(key, value) {
     var obj = {}
