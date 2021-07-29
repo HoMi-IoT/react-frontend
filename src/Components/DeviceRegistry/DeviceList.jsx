@@ -166,7 +166,6 @@ const DeviceList = (props) => {
     console.log("bt param:", mac)
     const ble = {
       "mac": mac,
-      "state": "connect",
     }
     const postOptions = {
       method: 'POST',
@@ -174,7 +173,7 @@ const DeviceList = (props) => {
       body: JSON.stringify(ble)
     }
 
-    await fetch("/bluetooth", postOptions)
+    await fetch("/bluetooth/connect", postOptions)
       .then(response => {response.json(); console.log("hereeeee")})
       .then(data => alert(data))
   })
