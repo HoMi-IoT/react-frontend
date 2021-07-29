@@ -48,7 +48,7 @@ const DeviceList = (props) => {
     const deleteOptions = {
       method: 'DELETE',
     }
-    var url = '/device' + "/" + param
+    var url = '/device' + "/id" + "/" + param
     console.log(url)
 
     fetch(url,deleteOptions)
