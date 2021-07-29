@@ -1,29 +1,36 @@
 import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation} from 'react-router-dom';
+import { Header, Menu } from 'semantic-ui-react';
 
-export default () => {
+const Navbar = () => {
+  const location = useLocation();
 
   return (
     <div className="ui top fixed menu">
-      <Link to="/" className="item">
+      <Menu.Header className="item">
         <div className="ui medium header">
           <i className="home icon"></i>
           <div className="content">HoMI</div>
         </div>
-      </Link>
+      </Menu.Header>
       <div className="right menu">
         <Fragment>
-        <Link to="/path" className="item">
-            path
+        <Link to="/rules" className={location.pathname === "/rules" ? "active item" : "item"}>
+            Rules
         </Link>
-        <Link to="/Devices" className="item">
+        <Link to="/script" className={location.pathname === "/script" ? "active item" : "item"}>
+            Scripting
+        </Link>
+        <Link to="/devices" className={location.pathname === "/devices" ? "active item" : "item"}>
             Devices
         </Link>
-        <Link to="/login" onClick={()=>{}} className="item">
-            Logout
+        <Link to="/data" className={location.pathname === "/data" ? "active item" : "item"}>
+            Data
         </Link>
         </Fragment>
       </div>
     </div>
   );
 };
+
+export default Navbar;

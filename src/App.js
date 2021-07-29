@@ -8,6 +8,8 @@ import Navbar from './Components/Navbar/Navbar';
 
 
 import DeviceList from './Components/DeviceRegistry/DeviceList'
+import Rules from './Components/rules/Rules';
+import Scripting from './Components/scripting/Scripting';
 
 
 function App() {
@@ -19,10 +21,10 @@ function App() {
           <section className="ui container mt-5">
 
             <Switch>
-              <Route exact path="/path/:id" component={()=><div>{"path/id"}</div>} />
-              <Route exact path="/path" component={()=><div>{"path"}</div>} />
+              <Route exact path="/script" component={Scripting} />
+              <Route exact path="/rules" component={Rules} />
               <Route exact path="/devices" component={DeviceList} />
-              <Route path="/" component={()=><div>{"Home"}</div>} />
+              <Route path="/" component={()=><div>{"Data"}</div>} />
             </Switch>
           </section>
         </Fragment>
