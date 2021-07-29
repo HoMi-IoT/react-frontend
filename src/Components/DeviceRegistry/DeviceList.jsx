@@ -174,8 +174,9 @@ const DeviceList = (props) => {
     }
 
     await fetch("/bluetooth/connect", postOptions)
-      .then(response => {response.json(); console.log("hereeeee")})
+      .then(response => response.text())
       .then(data => alert(data))
+      .catch(error => alert("error"))
   })
   
 
