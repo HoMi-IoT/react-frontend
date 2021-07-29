@@ -22,17 +22,17 @@ const DeviceList = (props) => {
   const [values, setValues] =  useState(initial)
 
   useEffect(() => {
-    // const getOptions = {
-    //   method: 'GET',
-    //   headers: { 
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json'
-    //   }
-    // }
-    // fetch('http://localhost:8182/devices', getOptions)
-    //   .then(response => response.json())
-    //   .then(data => setDevices(data))
-    setDevices(deviceArr)
+    const getOptions = {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }
+    fetch('http://localhost:8182/devices', getOptions)
+      .then(response => response.json())
+      .then(data => setDevices(data))
+    // setDevices(deviceArr)
   }, [])
 
   function combineKV(key, value) {
