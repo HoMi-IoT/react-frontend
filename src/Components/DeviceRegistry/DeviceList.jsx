@@ -29,7 +29,7 @@ const DeviceList = (props) => {
         'Accept': 'application/json'
       }
     }
-    fetch('http://localhost:8182/devices', getOptions)
+    fetch('/devices', getOptions)
       .then(response => response.json())
       .then(data => setDevices(data))
     // setDevices(deviceArr)
@@ -48,7 +48,7 @@ const DeviceList = (props) => {
     const deleteOptions = {
       method: 'DELETE',
     }
-    var url = 'http://localhost:8182/device' + "/" + param
+    var url = '/device' + "/" + param
     console.log(url)
 
     fetch(url,deleteOptions)
@@ -133,7 +133,7 @@ const DeviceList = (props) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(device)
     }
-    fetch('http://localhost:8182/devices', postOptions)
+    fetch('/devices', postOptions)
       .then(response => response.text())
       .then(data => {console.log(data); setDevices([...devices, device])})
 
@@ -174,7 +174,7 @@ const DeviceList = (props) => {
       body: JSON.stringify(ble)
     }
 
-    await fetch("http://localhost:8182/bluetooth", postOptions)
+    await fetch("/bluetooth", postOptions)
       .then(response => {response.json(); console.log("hereeeee")})
       .then(data => alert(data))
   })
