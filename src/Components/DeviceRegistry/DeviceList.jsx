@@ -48,15 +48,13 @@ const DeviceList = (props) => {
     const deleteOptions = {
       method: 'DELETE',
     }
-    var url = '/device' + "/id" + "/" + param
+    var url = '/devices/id/' + param
     console.log(url)
 
     fetch(url,deleteOptions)
-      .then(response => console.log(response.text()))
-
-    const newList = devices.filter((item) => item.name !== param);
-    setDevices(newList);
-    console.log("DEVICES:", devices)
+      .then(response => response.text())
+      .then(text => {if(text ==="Device deleted") setDevices(devices.filter((item) => item.name !== param))})
+      .catch(error => {alert("error"); console.error(error);});
   })
 
   const handleNameChange = (e => {
