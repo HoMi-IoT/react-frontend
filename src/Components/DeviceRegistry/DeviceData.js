@@ -16,7 +16,8 @@ const devices = [
       "name":"light1",
       "addresses":{
         "ipaddr1":"10.0.0.18",
-        "MAC":"02:9B:99:CB:6Y:FC"
+        "MAC":"02:9B:99:CB:6Y:FC",
+        "BT_MAC":"40:6Y:44:IO:Z3:MX"
       },
       "attributes": {
         "brightness":"500",

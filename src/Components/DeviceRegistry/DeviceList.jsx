@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { Icon, List, Header, Container, Table, Button, Form } from 'semantic-ui-react'
+import deviceArr from "./DeviceData"
 
 const initial = {
   dname: '',
@@ -21,16 +22,17 @@ const DeviceList = (props) => {
   const [values, setValues] =  useState(initial)
 
   useEffect(() => {
-    const getOptions = {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }
-    fetch('http://localhost:8182/devices', getOptions)
-      .then(response => response.json())
-      .then(data => setDevices(data))
+    // const getOptions = {
+    //   method: 'GET',
+    //   headers: { 
+    //     'Content-Type': 'application/json',
+    //     'Accept': 'application/json'
+    //   }
+    // }
+    // fetch('http://localhost:8182/devices', getOptions)
+    //   .then(response => response.json())
+    //   .then(data => setDevices(data))
+    setDevices(deviceArr)
   }, [])
 
   function combineKV(key, value) {
@@ -42,6 +44,16 @@ const DeviceList = (props) => {
   }
 
   const handleDeleteDevice = param => (e => {
+    //make a post call to backend to delete then delete from local copy
+    const deleteOptions = {
+      method: 'DELETE',
+    }
+    var url = 'http://localhost:8182/device' + "/" + param
+    console.log(url)
+
+    fetch(url,deleteOptions)
+      .then(response => console.log(response.text()))
+
     const newList = devices.filter((item) => item.name !== param);
     setDevices(newList);
     console.log("DEVICES:", devices)
@@ -149,6 +161,24 @@ const DeviceList = (props) => {
   const handleHideGroups = () => {
     setShowGroups(false)
   }
+  
+  const handleConnectBT = mac => (async e => {
+    console.log("bt param:", mac)
+    const ble = {
+      "mac": mac,
+      "state": "connect",
+    }
+    const postOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ble)
+    }
+
+    await fetch("http://localhost:8182/bluetooth", postOptions)
+      .then(response => {response.json(); console.log("hereeeee")})
+      .then(data => alert(data))
+  })
+  
 
   const getDevicesInGroup = (groupName) => {
     let d = []
@@ -177,7 +207,7 @@ const DeviceList = (props) => {
         {showDevices && devices.map(device => (
           <Table.Body>
             <Table.Row>
-              <Table.Cell style={{width:"45%"}}>
+              <Table.Cell style={{width:"35%"}}>
                 <Header as='h4' image>
                   <Icon name='mobile alternate' />
                     <Header.Content>
@@ -185,16 +215,21 @@ const DeviceList = (props) => {
                     </Header.Content>
                   </Header>
                   <Button basic compact floated={'right'} color='red' onClick={handleDeleteDevice(device.name)}>Delete</Button>
-                  <Button basic compact floated={'right'} color='blue'>Edit</Button>
               </Table.Cell>
               <Table.Cell>
                 <List>
                   {Object.entries(device.addresses).map(
-                    ([key, value]) =>  (
+                    ([key, value]) =>  {
+                      return key === "BT_MAC" ? (
+                        <List.Item>
+                          <List.Content>{key}{": "}{value}</List.Content>
+                          <Button basic compact color='blue' onClick={handleConnectBT(device.addresses.BT_MAC)}>Connect BT</Button>
+                        </List.Item>
+                      ) :
                       <List.Item>
                         <List.Content>{key}{": "}{value}</List.Content>
                       </List.Item>
-                    )
+                  }
                   )}
                   </List>
               </Table.Cell>
@@ -278,8 +313,9 @@ const DeviceList = (props) => {
           {showGroups && groups.map(group => (
           
               <Table.Row>
-                  <Table.Cell>
+                  <Table.Cell style={{width:"35%"}}>
                     {group}
+                    <Button basic compact floated={'right'} color='red'>Delete</Button>
                   </Table.Cell>
                   <Table.Cell>
                     <List>
