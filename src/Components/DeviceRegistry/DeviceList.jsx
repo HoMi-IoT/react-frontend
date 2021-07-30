@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { Icon, List, Header, Container, Table, Button, Form } from 'semantic-ui-react'
 import deviceArr from "./DeviceData"
 
@@ -19,12 +19,12 @@ const DeviceList = (props) => {
   const [devices, setDevices] = useState([]);
   const [showDevices, setShowDevices] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
-  const [values, setValues] =  useState(initial)
+  const [values, setValues] = useState(initial)
 
   useEffect(() => {
     const getOptions = {
       method: 'GET',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
@@ -35,9 +35,11 @@ const DeviceList = (props) => {
     // setDevices(deviceArr)
   }, [])
 
-  function combineKV(key, value) {
+  function combineKV(key, value) {]
+
     var obj = {}
     for (var i = 0; i < key.length; i++) {
+
       obj[key[i]] = value[i]
     }
     return obj
@@ -51,10 +53,10 @@ const DeviceList = (props) => {
     var url = '/devices/id/' + param
     console.log(url)
 
-    fetch(url,deleteOptions)
+    fetch(url, deleteOptions)
       .then(response => response.text())
-      .then(text => {if(text ==="Device deleted") setDevices(devices.filter((item) => item.name !== param))})
-      .catch(error => {alert("error"); console.error(error);});
+      .then(text => { if (text === "Device deleted") setDevices(devices.filter((item) => item.name !== param)) })
+      .catch(error => { alert("error"); console.error(error); });
   })
 
   const handleNameChange = (e => {
@@ -109,15 +111,23 @@ const DeviceList = (props) => {
     for (var i = 0; i < devices.length; i++) {
       if (devices[i].name === dname) {
         alert("Device name already exists. Please enter a different name.")
-        return 
+        return
       }
     }
-    var addrk = values.addresskeys.split(',')
-    var addrv = values.addressvalues.split(',')
-    var address = combineKV(addrk, addrv)
-    var attrk = values.attributekeys.split(',')
-    var attrv = values.attributevalues.split(',')
-    var attribute = combineKV(attrk, attrv)
+    var address = {}
+    if (values.addresskeys.trim() !== "" && values.addressvalues.trim() !== "") {
+      var addrk = values.addresskeys.split(',')
+      var addrv = values.addressvalues.split(',')
+      address = combineKV(addrk, addrv)
+    } 
+    var attribute = {}
+
+    if (values.attributekeys.trim() !== "" && values.attributevalues.trim() !== "") {
+      var attrk = values.attributekeys.split(',')
+      var attrv = values.attributevalues.split(',')
+      attribute = combineKV(attrk, attrv)
+    }
+
     var group = values.groups.split(',')
     var device = {
       name: dname,
@@ -133,9 +143,9 @@ const DeviceList = (props) => {
     }
     fetch('/devices', postOptions)
       .then(response => response.text())
-      .then(data => {console.log(data); setDevices([...devices, device])})
+      .then(data => { console.log(data); setDevices([...devices, device]) })
 
-    alert('New device ' + dname +  ", form submitted.")
+    alert('New device ' + dname + ", form submitted.")
     //handle form submit and device adding
     e.preventDefault()
   })
@@ -159,7 +169,7 @@ const DeviceList = (props) => {
   const handleHideGroups = () => {
     setShowGroups(false)
   }
-  
+
   const handleConnectBT = mac => (async e => {
     console.log("bt param:", mac)
     const ble = {
@@ -176,7 +186,7 @@ const DeviceList = (props) => {
       .then(data => alert(data))
       .catch(error => alert("error"))
   })
-  
+
 
   const getDevicesInGroup = (groupName) => {
     let d = []
@@ -187,7 +197,7 @@ const DeviceList = (props) => {
     })
     return d
   }
-  
+
   return (
     <Container>
       <Header as='h2' dividing>
@@ -195,74 +205,74 @@ const DeviceList = (props) => {
       </Header>
       <Table celled>
         <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Device</Table.HeaderCell>
-              <Table.HeaderCell>Addresses</Table.HeaderCell>
-              <Table.HeaderCell>Attributes</Table.HeaderCell>
-              <Table.HeaderCell>Groups</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Device</Table.HeaderCell>
+            <Table.HeaderCell>Addresses</Table.HeaderCell>
+            <Table.HeaderCell>Attributes</Table.HeaderCell>
+            <Table.HeaderCell>Groups</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
         {showDevices && devices.map(device => (
           <Table.Body>
             <Table.Row>
-              <Table.Cell style={{width:"35%"}}>
+              <Table.Cell style={{ width: "35%" }}>
                 <Header as='h4' image>
                   <Icon name='mobile alternate' />
-                    <Header.Content>
-                      {device.name}
-                    </Header.Content>
-                  </Header>
-                  <Button basic compact floated={'right'} color='red' onClick={handleDeleteDevice(device.name)}>Delete</Button>
+                  <Header.Content>
+                    {device.name}
+                  </Header.Content>
+                </Header>
+                <Button basic compact floated={'right'} color='red' onClick={handleDeleteDevice(device.name)}>Delete</Button>
               </Table.Cell>
               <Table.Cell>
                 <List>
                   {Object.entries(device.addresses).map(
-                    ([key, value]) =>  {
+                    ([key, value]) => {
                       return key === "BT_MAC" ? (
                         <List.Item>
                           <List.Content>{key}{": "}{value}</List.Content>
                           <Button basic compact color='blue' onClick={handleConnectBT(device.addresses.BT_MAC)}>Connect BT</Button>
                         </List.Item>
                       ) :
-                      <List.Item>
-                        <List.Content>{key}{": "}{value}</List.Content>
-                      </List.Item>
-                  }
+                        <List.Item>
+                          <List.Content>{key}{": "}{value}</List.Content>
+                        </List.Item>
+                    }
                   )}
-                  </List>
+                </List>
               </Table.Cell>
               <Table.Cell>
                 <List>
-                {Object.entries(device.attributes).map(
-                  ([key, value]) =>  (
-                    <List.Item>
-                      <List.Content>{key}{": "}{value}</List.Content>
-                    </List.Item>
-                  )
-                )}
+                  {Object.entries(device.attributes).map(
+                    ([key, value]) => (
+                      <List.Item>
+                        <List.Content>{key}{": "}{value}</List.Content>
+                      </List.Item>
+                    )
+                  )}
                 </List>
 
               </Table.Cell>
               <Table.Cell>
                 <List>
-                {device.groups.map(group => (
-                  <List.Item as='a'>
-                  <List.Content>{group}</List.Content>
-                </List.Item>
-                ))}
+                  {device.groups.map(group => (
+                    <List.Item as='a'>
+                      <List.Content>{group}</List.Content>
+                    </List.Item>
+                  ))}
                 </List>
               </Table.Cell>
             </Table.Row>
           </Table.Body>
         ))}
       </Table>
-      {showDevices ? 
-          <Button onClick={(handleHideDevices)} primary>
-            <Button.Content>
-              Hide Devices
-            </Button.Content>
-          </Button>
-      : 
+      {showDevices ?
+        <Button onClick={(handleHideDevices)} primary>
+          <Button.Content>
+            Hide Devices
+          </Button.Content>
+        </Button>
+        :
         <Button onClick={(handleShowDevices)} primary>
           <Button.Content>
             Show Devices
@@ -273,29 +283,29 @@ const DeviceList = (props) => {
       <br></br>
       <Form onSubmit={handleSubmit}>
         <Form.Group>
-          <Form.Input name="dname" label="Enter device name" value={values.name} onChange={handleNameChange} inline/>
+          <Form.Input name="dname" label="Enter device name" value={values.name} onChange={handleNameChange} inline />
         </Form.Group>
         <Form.Group>
-          <Form.Input name="addresskeys" inline label="Add addresses" placeholder="Address keys (comma separated)" value={values.addresskeys} onChange={handleAddressKeyChange}/>
-          <Form.Input name="addressvalues" placeholder="Address values (comma separated)" value={values.addressvalues} onChange={handleAddressValChange}/>
+          <Form.Input name="addresskeys" inline label="Add addresses" placeholder="Address keys (comma separated)" value={values.addresskeys} onChange={handleAddressKeyChange} />
+          <Form.Input name="addressvalues" placeholder="Address values (comma separated)" value={values.addressvalues} onChange={handleAddressValChange} />
         </Form.Group>
         <Form.Group>
-          <Form.Input name="attributekeys" inline label="Add attributes" placeholder="Attribute keys (comma separated)" value={values.attributekeys} onChange={handleAttributeKeyChange}/>
-          <Form.Input name="attributevalues" placeholder="Attribute values (comma separated)" value={values.attributevalues} onChange={handleAttributeValChange}/>
+          <Form.Input name="attributekeys" inline label="Add attributes" placeholder="Attribute keys (comma separated)" value={values.attributekeys} onChange={handleAttributeKeyChange} />
+          <Form.Input name="attributevalues" placeholder="Attribute values (comma separated)" value={values.attributevalues} onChange={handleAttributeValChange} />
         </Form.Group>
-        <Form.Input name="groups" inline label="Add groups" placeholder="Groups (comma separated)" value={values.groups} onChange={handleGroupChange}/>
+        <Form.Input name="groups" inline label="Add groups" placeholder="Groups (comma separated)" value={values.groups} onChange={handleGroupChange} />
         <Button type="submit" basic >
-            <Button.Content>
-              <Icon name="mobile alternate" size="big"></Icon>
-              <Icon corner name='add' />
-            </Button.Content>
-      </Button>
+          <Button.Content>
+            <Icon name="mobile alternate" size="big"></Icon>
+            <Icon corner name='add' />
+          </Button.Content>
+        </Button>
       </Form>
       <br></br>
 
-    <div>
-      <br></br>
-    </div>
+      <div>
+        <br></br>
+      </div>
 
       <Header as='h2' dividing>
         Groups
@@ -309,40 +319,40 @@ const DeviceList = (props) => {
         </Table.Header>
         <Table.Body>
           {showGroups && groups.map(group => (
-          
-              <Table.Row>
-                  <Table.Cell style={{width:"35%"}}>
-                    {group}
-                    <Button basic compact floated={'right'} color='red'>Delete</Button>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <List>
-                      {getDevicesInGroup(group).map(d => (
-                        <List.Item>
-                          <List.Content>{d}</List.Content>
-                        </List.Item>
-                      ))}
-                    </List>
-                  </Table.Cell>
-              </Table.Row>  
-          
+
+            <Table.Row>
+              <Table.Cell style={{ width: "35%" }}>
+                {group}
+                <Button basic compact floated={'right'} color='red'>Delete</Button>
+              </Table.Cell>
+              <Table.Cell>
+                <List>
+                  {getDevicesInGroup(group).map(d => (
+                    <List.Item>
+                      <List.Content>{d}</List.Content>
+                    </List.Item>
+                  ))}
+                </List>
+              </Table.Cell>
+            </Table.Row>
+
           ))}
-          </Table.Body>
+        </Table.Body>
       </Table>
-      {showGroups ? 
-          [<Button basic >
-            <Button.Content>
-              <Icon name="list" size="big"></Icon>
-              <Icon corner name='add' />
-            </Button.Content>
-          </Button>,
-          <Button onClick={(handleHideGroups)} primary>
-            <Button.Content>
-              Hide Groups
-            </Button.Content>
-          </Button>
-          ]
-      : 
+      {showGroups ?
+        [<Button basic >
+          <Button.Content>
+            <Icon name="list" size="big"></Icon>
+            <Icon corner name='add' />
+          </Button.Content>
+        </Button>,
+        <Button onClick={(handleHideGroups)} primary>
+          <Button.Content>
+            Hide Groups
+          </Button.Content>
+        </Button>
+        ]
+        :
         <Button onClick={(handleShowGroups)} primary>
           <Button.Content>
             Show Groups
