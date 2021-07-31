@@ -92,7 +92,7 @@ const RulesForm = ({ rule }) => {
                             { key: 3, text: ">", value: "gte" },
                             { key: 4, text: "<", value: "lt" },
                             {
-                                key: 4, text: "<=", value: "lte"
+                                key: 5, text: "<=", value: "lte"
                             }]}
                             simple item value={condition.condition}
                             onChange={(_, data) => {

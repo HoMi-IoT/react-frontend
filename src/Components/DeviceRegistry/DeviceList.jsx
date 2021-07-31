@@ -202,9 +202,10 @@ const DeviceList = (props) => {
               <Table.HeaderCell>Groups</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
-        {showDevices && devices.map(device => (
           <Table.Body>
-            <Table.Row>
+        {showDevices && devices.map(device => (
+          
+            <Table.Row key={device.name}>
               <Table.Cell style={{width:"35%"}}>
                 <Header as='h4' image>
                   <Icon name='mobile alternate' />
@@ -246,15 +247,15 @@ const DeviceList = (props) => {
               <Table.Cell>
                 <List>
                 {device.groups.map(group => (
-                  <List.Item as='a'>
+                  <List.Item as='a' key={group}>
                   <List.Content>{group}</List.Content>
                 </List.Item>
                 ))}
                 </List>
               </Table.Cell>
             </Table.Row>
-          </Table.Body>
         ))}
+        </Table.Body>
       </Table>
       {showDevices ? 
           <Button onClick={(handleHideDevices)} primary>
@@ -310,7 +311,7 @@ const DeviceList = (props) => {
         <Table.Body>
           {showGroups && groups.map(group => (
           
-              <Table.Row>
+              <Table.Row key={group}>
                   <Table.Cell style={{width:"35%"}}>
                     {group}
                     <Button basic compact floated={'right'} color='red'>Delete</Button>
