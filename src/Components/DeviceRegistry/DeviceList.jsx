@@ -324,7 +324,6 @@ const DeviceList = (props) => {
               <Table.Row key={group}>
                   <Table.Cell style={{width:"35%"}}>
                     {group}
-                    <Button basic compact floated={'right'} color='red'>Delete</Button>
                   </Table.Cell>
                   <Table.Cell>
                     <List>
@@ -341,18 +340,12 @@ const DeviceList = (props) => {
         </Table.Body>
       </Table>
       {showGroups ?
-        [<Button basic >
-          <Button.Content>
-            <Icon name="list" size="big"></Icon>
-            <Icon corner name='add' />
-          </Button.Content>
-        </Button>,
         <Button onClick={(handleHideGroups)} primary>
           <Button.Content>
             Hide Groups
           </Button.Content>
         </Button>
-        ]
+        
         :
         <Button onClick={(handleShowGroups)} primary>
           <Button.Content>
