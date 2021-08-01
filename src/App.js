@@ -10,6 +10,7 @@ import Navbar from './Components/Navbar/Navbar';
 import DeviceList from './Components/DeviceRegistry/DeviceList'
 import Rules from './Components/rules/Rules';
 import Scripting from './Components/scripting/Scripting';
+import DataStore from './Components/DataStore/datastore';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
               <Route exact path="/script" component={Scripting} />
               <Route exact path="/rules" component={Rules} />
               <Route exact path="/devices" component={DeviceList} />
-              <Route path="/" component={()=>{return "DataStore"}} />
+              <Route path="/" component={DataStore} />
             </Switch>
           </section>
         </Fragment>

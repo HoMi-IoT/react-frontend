@@ -5,69 +5,74 @@ const DataRow = (props) => {
     const [isEdit, setIsEdit] = useState(false)
     const [value, setValue] = useState(props.entry.value)
 
-    const requestOptions = {
-        method: "DELETE"
-    }
-
     const deleteRow = () => {
-        fetch(`/data/${props.entry.key}`, requestOptions)
-        .then(() => {
-            props.onChange()
-        })
-    } 
+        fetch(`/data/${props.entry.key}`, { method: "DELETE" })
+            .then(() => {
+                props.onChange();
+            })
+    }
 
 
     const saveRow = () => {
         const postOptions = {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: {value}
-        }
-        fetch(`/data/${props.entry.key}`, postOptions)
-        .then(() => {
-            props.onChange({key: props.entry.key, value: value})
-        })
-    }
-    
-    return (<Table.Row key={props.entry.key}>
-        <Table.Cell>{props.entry.key}</Table.Cell>
-        <Table.Cell>{isEdit ? <Input placeholder="value..." value={value} onChange={(_, {value}) => {
-            setValue(value)
-        }}></Input> : props.entry.value }</Table.Cell>
-        <Table.Cell>
-            {isEdit 
-            ? <Fragment>
-                <Button primary onClick={saveRow}>Save</Button>
-                <Button red onClick={setIsEdit(false)}>Cancel</Button>
-            </Fragment> 
-            : <Fragment>
-                <Button primary onClick={setIsEdit(true)}>Edit</Button>
-                <Button red onClick={deleteRow}>Delete</Button>    
-            </Fragment>}
 
-        </Table.Cell>
-    </Table.Row>)
+            body: JSON.stringify({ value })
+        }
+        console.log(postOptions);
+        fetch(`/data/${props.entry.key}`, postOptions)
+            .then(() => {
+                props.onChange({ key: props.entry.key, value: value })
+                setIsEdit(false)
+            })
+    }
+
+    return (
+        <Table.Row key={props.entry.key}>
+            <Table.Cell>{props.entry.key}</Table.Cell>
+            <Table.Cell>
+                {isEdit ?
+                    <Input
+                        placeholder="value..."
+                        value={typeof value === "object" ? JSON.stringify(value) : value}
+                        onChange={(_, data) => {
+                            console.log(data);
+                            setValue(data.value)
+                        }}
+                    />
+                    :
+                    typeof props.entry.value === "object" ? JSON.stringify(props.entry.value) : props.entry.value
+                }
+            </Table.Cell>
+            <Table.Cell>
+                {isEdit
+                    ? <>
+                        <Button primary onClick={saveRow}>Save</Button>
+                        <Button red onClick={() => { setIsEdit(false); }}>Cancel</Button>
+                    </>
+                    : <>
+                        <Button primary onClick={() => { setIsEdit(true); }}>Edit</Button>
+                        <Button red onClick={deleteRow}>Delete</Button>
+                    </>}
+
+            </Table.Cell>
+        </Table.Row>
+    );
 }
 
-const DataStore = (props) => {
+const DataStore = () => {
     const [data, setData] = useState([]);
-    // const [showDevices, setShowDevices] = useState(false);
-    // const [showGroups, setShowGroups] = useState(false);
-    // const [values, setValues] = useState(initial)
-
-
+    const [newEntry, setNewEntry] = useState({ key: "", value: "" });
 
     useEffect(() => {
-        const getOptions = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }
-        fetch('/data', getOptions)
+        fetch('/data')
             .then(response => response.json())
-            .then(data => setData(Object.keys(data).map(k => { return { key: k, value: data } })))
+            .then(data => {
+                console.log(data);
+                let newData = Object.keys(data).map(k => { return { key: k, value: data[k] } })
+                console.log(newData);
+                setData(newData);
+            })
     }, [])
 
     return (
@@ -78,17 +83,54 @@ const DataStore = (props) => {
                     <Table.HeaderCell>Value</Table.HeaderCell>
                     <Table.HeaderCell>Action</Table.HeaderCell>
                 </Table.Row>
+                <Table.Row>
+                    <Table.HeaderCell>
+                        <Input
+                            placeholder="New Key..."
+                            value={newEntry.key}
+                            onChange={(_, {value}) => {
+                                setNewEntry({...newEntry, key: value})
+                            }}
+                        />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                        <Input
+                            placeholder="New value..."
+                            value={newEntry.value}
+                            onChange={(_, {value}) => {
+                                setNewEntry({...newEntry, value})
+                            }}
+                        />
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                        <Button primary onClick={() => {
+                            const options = {
+                                method: "PUT",
+                                body: JSON.stringify(newEntry)
+                            }
+                            fetch(`/data`, options)
+                                .then(() => {
+                                    setData([newEntry, ...data])
+                                    setNewEntry({ key: "", value: "" })
+                                })
+
+                        }}>Add</Button></Table.HeaderCell>
+                </Table.Row>
             </Table.Header>
             <Table.Body>
-                {data.map(d => {return <DataRow entry={d} onChange={(newValue) => 
-                {
-                    if (newValue) {
-                        setData(data.map(d => d.key === newValue.key ? newValue : d ))
-                    } else {
-                        setData(data.filter(da => da.key !== d.key))
-                    }
-                }}/>})}
+                {data.map(d => <DataRow
+                    key={d.key}
+                    entry={d}
+                    onChange={(newValue) => {
+                        newValue ?
+                            setData(data.map(d => d.key === newValue.key ? newValue : d))
+                            :
+                            setData(data.filter(da => da.key !== d.key))
+                    }} />
+                )}
             </Table.Body>
         </Table>
     )
 }
+
+export default DataStore;
