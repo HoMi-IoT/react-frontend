@@ -1,13 +1,21 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Grid, List, Button, Checkbox, Segment, SegmentGroup, Dropdown, Header, Input, Icon } from 'semantic-ui-react';
 
 const Rules = () => {
-
+    const [rules, setRules] = useState([]);
+    useEffect(()=>{
+        fetch('/rules')
+                .then(res => res.json())
+                .then(data => {
+                    // let ks = Object.keys(data).filter(keyVal => !["_revision", "_id", "_modified"].includes(keyVal));
+                    setRules( Object.keys(data).map(k => { return { id: k, text: data[k] } }))
+                });
+    }, [])
     return (
         <Grid columns='2' divided>
             <Grid.Row>
                 <Grid.Column width='4' >
-                    <RulesList rules={[1, 2, 3, 4]} />
+                    <RulesList rules={rules} />
                 </Grid.Column>
                 <Grid.Column width='12' >
                     <RulesForm />
@@ -29,10 +37,10 @@ const RulesList = ({ rules }) => {
             </List.Item>
             {rules.map((rule) => {
                 return (
-                    <List.Item key={rule}>
+                    <List.Item key={rule.id}>
                         <List.Icon name='cogs' size='large' verticalAlign='middle' />
                         <List.Content onClick={() => { console.log("11111"); }}>
-                            <List.Header as="a">{rule}</List.Header>
+                            <List.Header as="a">{rule.text}</List.Header>
                         </List.Content>
                     </List.Item>
                 );
@@ -89,11 +97,7 @@ const RulesForm = ({ rule }) => {
                         options={[
                             { key: 1, text: "is", value: "is" },
                             { key: 2, text: ">", value: "gt" },
-                            { key: 3, text: ">", value: "gte" },
-                            { key: 4, text: "<", value: "lt" },
-                            {
-                                key: 5, text: "<=", value: "lte"
-                            }]}
+                            { key: 4, text: "<", value: "lt" }]}
                             simple item value={condition.condition}
                             onChange={(_, data) => {
                                 setConditions(conditions.map(c => {

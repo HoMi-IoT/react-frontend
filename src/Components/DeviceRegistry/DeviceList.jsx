@@ -40,7 +40,7 @@ const DeviceList = (props) => {
     var obj = {}
     for (var i = 0; i < key.length; i++) {
 
-      obj[key[i]] = value[i]
+      obj[key[i].trim()] = value[i].trim()
     }
     return obj
   }

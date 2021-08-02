@@ -66,12 +66,13 @@ const DataStore = () => {
 
     useEffect(() => {
         fetch('/data')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                let newData = Object.keys(data).map(k => { return { key: k, value: data[k] } })
-                console.log(newData);
-                setData(newData);
+            .then(async (response) => {
+                if(response.status ==200) {
+                let data = await response.json()
+                    let newData = Object.keys(data).map(k => { return { key: k, value: data[k] } })
+                    console.log(newData);
+                    setData(newData);
+            }
             })
     }, [])
 
