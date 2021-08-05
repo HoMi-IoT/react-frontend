@@ -3,22 +3,25 @@ import { Grid, List, Button, Checkbox, Segment, SegmentGroup, Dropdown, Header, 
 
 const Rules = () => {
     const [rules, setRules] = useState([]);
-    useEffect(()=>{
+    const loadRules = ()=>{
         fetch('/rules')
-                .then(res => res.json())
-                .then(data => {
-                    // let ks = Object.keys(data).filter(keyVal => !["_revision", "_id", "_modified"].includes(keyVal));
-                    setRules( Object.keys(data).map(k => { return { id: k, text: data[k] } }))
-                });
+                .then(async res => {
+                    if(res.status ==200) {
+                        let data = await res.json()
+                        setRules( Object.keys(data).map(k => { return { id: k, text: data[k] } }))
+                }});
+    }
+    useEffect(()=>{
+        loadRules()
     }, [])
     return (
         <Grid columns='2' divided>
             <Grid.Row>
-                <Grid.Column width='4' >
+                <Grid.Column width='4' style={{overflow: "auto"}}>
                     <RulesList rules={rules} />
                 </Grid.Column>
                 <Grid.Column width='12' >
-                    <RulesForm />
+                    <RulesForm onAdd={loadRules}/>
                 </Grid.Column>
             </Grid.Row>
         </Grid>
@@ -30,17 +33,20 @@ const RulesList = ({ rules }) => {
     return (
         <List divided relaxed>
             <List.Item>
-                <List.Content floated='right' >
+                {/* <List.Content floated='right' >
                     <Button onClick={() => { console.log("cleared"); }}>Clear selection</Button>
-                </List.Content>
+                </List.Content> */}
                 <List.Header as='h4' >Saved Rules</List.Header>
             </List.Item>
             {rules.map((rule) => {
+                let t = rule.text.split("\n");
+                t[0] = "if " + t[0];
+                t[1] = t[1];
                 return (
                     <List.Item key={rule.id}>
                         <List.Icon name='cogs' size='large' verticalAlign='middle' />
                         <List.Content onClick={() => { console.log("11111"); }}>
-                            <List.Header as="a">{rule.text}</List.Header>
+                            <List.Header as="a"><pre>{t.join("\n")}</pre></List.Header>
                         </List.Content>
                     </List.Item>
                 );
@@ -52,10 +58,12 @@ const RulesList = ({ rules }) => {
 let timeOptions = ["AM", "PM"].map(s => Array.from(Array(12).keys()).map(t => { return { key: `${t < 10 ? `0${t}` : t}:00 ${s}`, text: `${t < 10 ? `0${t}` : t}:00 ${s}`, value: `${t < 10 ? `0${t}` : t}:00 ${s}` } }));
 timeOptions = [...timeOptions[0], ...timeOptions[1]]
 
-const RulesForm = ({ rule }) => {
-    const [withTime, setWithTime] = useState(rule);
+const RulesForm = ({ onAdd }) => {
+    const [withTime, setWithTime] = useState(false);
     const [times, setTimes] = useState({});
     const [conditions, setConditions] = useState([{ key: '', condition: 'is', value: '' }])
+    const [action, setAction] = useState({ type: 'script', command: '', arguments: [] })
+    const [rest, setRest] = useState(0)
     return (
         <SegmentGroup>
             <Segment basic>
@@ -96,7 +104,8 @@ const RulesForm = ({ rule }) => {
                         <Dropdown 
                         options={[
                             { key: 1, text: "is", value: "is" },
-                            { key: 2, text: ">", value: "gt" },
+                            { key: 2, text: "=", value: "gt" },
+                            { key: 3, text: ">", value: "gt" },
                             { key: 4, text: "<", value: "lt" }]}
                             simple item value={condition.condition}
                             onChange={(_, data) => {
@@ -134,8 +143,45 @@ const RulesForm = ({ rule }) => {
 
             <Segment basic>
                 <Header as='h3'>Action</Header>
-                <Segment basic textAlign='center'> Run <Dropdown options={[{ key: 1, text: "Script", value: "Script" }, { key: 2, text: "Service", value: "Service" }]} simple item defaultValue="Script" /> <Input placeholder="action..." /> with <Input placeholder="arg1, arg2..." /></Segment>
+                <Segment basic textAlign='center'> Run <Dropdown 
+                options={[{ key: 1, text: "script", value: "script" }, { key: 2, text: "service", value: "service" }]} 
+                simple 
+                item 
+                value={action.type} 
+                onChange={(e,{value})=>{setAction({...action, type:value})}}/> <Input 
+                placeholder="action..." 
+                value={action.command} 
+                onChange={(e,{value})=>{setAction({...action, command: value})}}/> with <Input 
+                placeholder="arg1, arg2..." 
+                value={action.arguments.join(",")}
+                onChange={(e, {value})=>{
+                    setAction({...action, arguments: value.split(",").map(v=>v.trim())})
+                }}/>
+                </Segment>
             </Segment>
+            <Segment basic>
+                <Header as='h3'>Rest Time</Header>
+                <Input 
+                placeholder="rest time in ms"
+                type="number" 
+                value={rest} 
+                onChange={(e,{value})=>{setRest(value)}}/>
+
+            </Segment>
+            <Button attached="bottom" primary content="Add Rule" onClick={()=>{
+                let rule = "";
+                if(withTime)
+                    alert("timed condition not implemnted yet");
+                rule+= conditions.map(({key, condition, value}) => `${key} ${condition} ${value}`).join(" and ") + "\n";
+                rule+= `invoke ${action.type} ${action.command} ${action.arguments.join(" ")}\n`;
+                rule+= `rest time ${rest}`;
+                fetch('/rules', { method: "POST", body: rule })
+                .then(res => {
+                    if(res.status ==200) {
+                        onAdd()
+                }});
+                
+            }}/>
         </ SegmentGroup>
     );
 }
