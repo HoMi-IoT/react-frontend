@@ -6,7 +6,7 @@ const Rules = () => {
     const loadRules = ()=>{
         fetch('/rules')
                 .then(async res => {
-                    if(res.status ==200) {
+                    if(res.status === 200) {
                         let data = await res.json()
                         setRules( Object.keys(data).map(k => { return { id: k, text: data[k] } }))
                 }});
@@ -41,7 +41,6 @@ const RulesList = ({ rules }) => {
             {rules.map((rule) => {
                 let t = rule.text.split("\n");
                 t[0] = "if " + t[0];
-                t[1] = t[1];
                 return (
                     <List.Item key={rule.id}>
                         <List.Icon name='cogs' size='large' verticalAlign='middle' />
@@ -177,7 +176,7 @@ const RulesForm = ({ onAdd }) => {
                 rule+= `rest time ${rest}`;
                 fetch('/rules', { method: "POST", body: rule })
                 .then(res => {
-                    if(res.status ==200) {
+                    if(res.status === 200) {
                         onAdd()
                 }});
                 

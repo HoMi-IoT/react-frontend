@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Icon, List, Header, Container, Table, Button, Form, Input } from 'semantic-ui-react'
+import { Table, Button, Input } from 'semantic-ui-react'
 
 const DataRow = (props) => {
     const [isEdit, setIsEdit] = useState(false)
@@ -67,7 +67,7 @@ const DataStore = () => {
     useEffect(() => {
         fetch('/data')
             .then(async (response) => {
-                if(response.status ==200) {
+                if(response.status ===200) {
                 let data = await response.json()
                     let newData = Object.keys(data).map(k => { return { key: k, value: data[k] } })
                     console.log(newData);

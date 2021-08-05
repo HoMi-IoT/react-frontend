@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Link, useLocation} from 'react-router-dom';
-import { Header, Menu } from 'semantic-ui-react';
+import { Menu } from 'semantic-ui-react';
 
 const Navbar = () => {
   const location = useLocation();

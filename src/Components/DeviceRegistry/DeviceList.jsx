@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Icon, List, Header, Container, Table, Button, Form } from 'semantic-ui-react'
-import deviceArr from "./DeviceData"
 
 const initial = {
   dname: '',
@@ -151,7 +150,7 @@ const DeviceList = (props) => {
   })
 
   let groups = [];
-  devices.map(device => {
+  devices.forEach(device => {
     groups.push(...device.groups)
   }) //offload this to useEffect [] to run once
 
@@ -190,7 +189,7 @@ const DeviceList = (props) => {
 
   const getDevicesInGroup = (groupName) => {
     let d = []
-    devices.map(device => {
+    devices.forEach(device => {
       if (device.groups.includes(groupName)) {
         d.push(device.name)
       }

@@ -39,7 +39,7 @@ const Scripting = () => {
                 </Grid.Column>
                 <Grid.Column width='12' >
                     <SegmentGroup>
-                        <ScriptEditor script={clickedScript} onSave={onSaveScript} onOutput={(text) => { setOutput(`${output}\>>\n${text}`) }} />
+                        <ScriptEditor script={clickedScript} onSave={onSaveScript} onOutput={(text) => { setOutput(`${output}>>\n${text}`) }} />
                         <Output output={output} onClear={() => { setOutput("") }} />
                     </SegmentGroup>
                 </Grid.Column>
